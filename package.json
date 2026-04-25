@@ -1,0 +1,17 @@
+{
+  "name": "college-store",
+  "version": "1.0.0",
+  "description": "College product selling website",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.6",
+    "express": "^4.22.1",
+    "mongoose": "^9.5.0"
+  }
+}
