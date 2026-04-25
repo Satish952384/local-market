@@ -42,7 +42,8 @@
         <textarea name="address" required></textarea>
       </div>
 
-      <button class="btn">Place Order</button>
+      <!-- 🔥 FIXED BUTTON -->
+      <button type="submit" class="btn">Place Order</button>
 
     </form>
 
@@ -63,9 +64,12 @@
 
 </div>
 
+<!-- 🔥 FINAL SCRIPT -->
 <script>
 async function submitOrder(e){
   e.preventDefault();
+
+  console.log("CLICK HO RAHA HAI"); // DEBUG
 
   const email = document.querySelector('[name="email"]').value;
 
@@ -77,25 +81,34 @@ async function submitOrder(e){
     return;
   }
 
-  const res = await fetch("/order", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      user: email,
-      items: cart,
-      total: total
-    })
-  });
+  try {
+    const res = await fetch("/order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        user: email,
+        items: cart,
+        total: total
+      })
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  alert(data.message);
+    alert("Order Done ✅");
 
-  localStorage.removeItem("cart");
-  window.location.href = "/";
+    localStorage.removeItem("cart");
+    localStorage.removeItem("cartTotal");
+
+    window.location.href = "/";
+
+  } catch (err) {
+    console.log(err);
+    alert("Error placing order ❌");
+  }
 }
 </script>
+
 </body>
 </html>
