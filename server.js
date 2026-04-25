@@ -7,12 +7,16 @@ const app = express();
 // ===== MIDDLEWARE =====
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// 🔥 IMPORTANT (public folder serve)
 app.use(express.static(path.join(__dirname, "public")));
 
-// ===== MONGODB CONNECT (FIXED) =====
-mongoose.connect("mongodb+srv://kumarsatish97_db_user:abc%40123@cluster0.09vltwc.mongodb.net/localmarket?retryWrites=true&w=majority")
+// ===== MONGODB CONNECT =====
+mongoose.connect(
+  "mongodb+srv://kumarsatish97_db_user:abc%40123@cluster0.09vltwc.mongodb.net/localmarket?retryWrites=true&w=majority"
+)
 .then(() => console.log("✅ MongoDB Connected"))
-.catch(err => console.log(err));
+.catch(err => console.log("❌ DB Error:", err));
 
 // ===== SCHEMA =====
 const userSchema = new mongoose.Schema({
@@ -69,7 +73,14 @@ app.get("/orders/:user", async (req, res) => {
   res.json(orders);
 });
 
-// ===== START SERVER =====
-app.listen(3000, () => {
-  console.log("🚀 Server running at http://localhost:3000");
+// ===== DEFAULT ROUTE (VERY IMPORTANT FIX) =====
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// ===== PORT FIX (Render ke liye) =====
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
