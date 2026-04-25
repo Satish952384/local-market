@@ -1,16 +1,93 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Order</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout - LocalMarket</title>
 <link rel="stylesheet" href="style.css">
+
+<style>
+body{
+  font-family: Arial;
+  background:#f4f6f9;
+}
+
+.checkout{
+  display:flex;
+  gap:30px;
+  padding:40px;
+}
+
+.left, .right{
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+.left{ flex:2 }
+.right{ flex:1 }
+
+.field{
+  margin-bottom:15px;
+}
+
+.field input, .field textarea{
+  width:100%;
+  padding:10px;
+  border-radius:5px;
+  border:1px solid #ccc;
+}
+
+.btn{
+  width:100%;
+  padding:12px;
+  background:#ff8c00;
+  color:white;
+  border:none;
+  border-radius:5px;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.btn:hover{
+  background:#e67e00;
+}
+
+.qr{
+  width:100%;
+}
+</style>
 </head>
 
 <body>
 
-<h2>Checkout</h2>
+<header style="background:#ff8c00;padding:15px;color:white;font-size:20px;">
+  LocalMarket 🛒
+</header>
 
-<input id="email" placeholder="Email"><br><br>
-<button onclick="submitOrder()">Place Order</button>
+<div class="checkout">
+
+  <!-- LEFT -->
+  <div class="left">
+    <h2>Delivery Details</h2>
+
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="email">
+    </div>
+
+    <button onclick="submitOrder()" class="btn">Place Order</button>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right">
+    <h2>Payment</h2>
+    <p>Scan QR to Pay</p>
+    <img src="/upi-qr.png" class="qr">
+  </div>
+
+</div>
 
 <script>
 const BASE_URL = "https://local-market-wr0w.onrender.com";
@@ -19,6 +96,7 @@ const BASE_URL = "https://local-market-wr0w.onrender.com";
 document.getElementById("email").value =
   localStorage.getItem("userName") || "";
 
+// 🔥 ORDER FUNCTION
 async function submitOrder(){
 
   const email = document.getElementById("email").value;
@@ -49,9 +127,11 @@ async function submitOrder(){
     localStorage.removeItem("cart");
     localStorage.removeItem("cartTotal");
 
+    window.location.href = "/";
+
   } catch (err){
     console.log(err);
-    alert("Error ❌");
+    alert("Server error ❌");
   }
 }
 </script>
