@@ -17,41 +17,37 @@
 
   <!-- LEFT -->
   <div class="left">
-
     <h2>Delivery Details</h2>
 
-    <form onsubmit="submitOrder(event)">
+    <!-- ❌ form hata diya (direct JS use karenge) -->
+    
+    <div class="field">
+      <label>Full Name</label>
+      <input type="text" id="name" required>
+    </div>
 
-      <div class="field">
-        <label>Full Name</label>
-        <input type="text" name="name" required>
-      </div>
+    <div class="field">
+      <label>Phone Number</label>
+      <input type="text" id="phone" required>
+    </div>
 
-      <div class="field">
-        <label>Phone Number</label>
-        <input type="text" name="phone" required>
-      </div>
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="email" required>
+    </div>
 
-      <div class="field">
-        <label>Email</label>
-        <input type="email" name="email" required>
-      </div>
+    <div class="field">
+      <label>Delivery Address</label>
+      <textarea id="address" required></textarea>
+    </div>
 
-      <div class="field">
-        <label>Delivery Address</label>
-        <textarea name="address" required></textarea>
-      </div>
-
-      <!-- 🔥 FIXED BUTTON -->
-      <button type="submit" class="btn">Place Order</button>
-
-    </form>
+    <!-- 🔥 DIRECT BUTTON -->
+    <button onclick="submitOrder()" class="btn">Place Order</button>
 
   </div>
 
   <!-- RIGHT -->
   <div class="right">
-
     <h2>Payment</h2>
 
     <div class="card-box">
@@ -59,19 +55,17 @@
       <img src="/upi-qr.png" class="qr">
       <p class="note">After payment, click "Place Order"</p>
     </div>
-
   </div>
 
 </div>
 
 <!-- 🔥 FINAL SCRIPT -->
 <script>
-async function submitOrder(e){
-  e.preventDefault();
+async function submitOrder(){
 
-  console.log("CLICK HO RAHA HAI"); // DEBUG
+  alert("Button Clicked ✅"); // DEBUG
 
-  const email = document.querySelector('[name="email"]').value;
+  const email = document.getElementById("email").value;
 
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
   const total = localStorage.getItem("cartTotal") || 0;
@@ -82,7 +76,7 @@ async function submitOrder(e){
   }
 
   try {
-    const res = await fetch("/order", {
+    const res = await fetch("https://local-market-wr0w.onrender.com/order", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -94,9 +88,11 @@ async function submitOrder(e){
       })
     });
 
+    alert("API HIT ✅");
+
     const data = await res.json();
 
-    alert("Order Done ✅");
+    alert("Order saved in DB ✅");
 
     localStorage.removeItem("cart");
     localStorage.removeItem("cartTotal");
@@ -105,7 +101,7 @@ async function submitOrder(e){
 
   } catch (err) {
     console.log(err);
-    alert("Error placing order ❌");
+    alert("Server error ❌");
   }
 }
 </script>

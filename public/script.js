@@ -2,6 +2,9 @@ let cart = JSON.parse(localStorage.getItem("cart")) || [];
 let userName = localStorage.getItem("userName") || "";
 let userLocation = localStorage.getItem("userLocation") || "";
 
+// 🔥 LIVE BASE URL
+const BASE_URL = "https://local-market-wr0w.onrender.com";
+
 // PRODUCTS
 const products = [
   {name:"Samosa",price:20,img:"images/fig1.jpg"},
@@ -94,7 +97,7 @@ async function submitLogin(){
     return;
   }
 
-  const res = await fetch("/login", {
+  const res = await fetch(`${BASE_URL}/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -122,7 +125,7 @@ function googleLogin() {
   closeModal("loginModal");
 }
 
-// 🔥 LOCATION (DB SAVE)
+// 🔥 LOCATION
 async function saveLocation() {
   let loc = document.getElementById("locationInput").value;
   if (!loc) return;
@@ -133,7 +136,7 @@ async function saveLocation() {
   document.getElementById("locText").innerText = loc;
   closeModal("locationModal");
 
-  await fetch("/location", {
+  await fetch(`${BASE_URL}/location`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -173,9 +176,7 @@ function showSection(type){
   if(type === "profile"){
     box.innerHTML = `
       <h3>👤 User Profile</h3>
-      <p style="background:#f0f0f0;padding:10px;border-radius:6px;">
-        Logged in as <b>${userName || "Guest"}</b>
-      </p>
+      <p>Logged in as <b>${userName || "Guest"}</b></p>
       <p><b>Location:</b> ${userLocation || "Not Set"}</p>
     `;
   }
@@ -183,11 +184,11 @@ function showSection(type){
   if(type === "orders"){
     box.innerHTML = "<h3>📦 Your Orders</h3><p>Loading...</p>";
 
-    fetch(`/orders/${userName}`)
+    fetch(`${BASE_URL}/orders/${userName}`)
       .then(res => res.json())
       .then(data => {
 
-        if(data.length === 0){
+        if(!data || data.length === 0){
           box.innerHTML = "<h3>📦 Your Orders</h3><p>No orders yet</p>";
           return;
         }
@@ -209,7 +210,7 @@ function showSection(type){
         box.innerHTML = html;
       })
       .catch(() => {
-        box.innerHTML = "<p>Error loading orders</p>";
+        box.innerHTML = "<p>Error loading orders ❌</p>";
       });
   }
 

@@ -1,14 +1,16 @@
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
+const cors = require("cors"); // 🔥 ADD
 
 const app = express();
 
 // ===== MIDDLEWARE =====
+app.use(cors()); // 🔥 VERY IMPORTANT
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 🔥 IMPORTANT (public folder serve)
+// STATIC FILES
 app.use(express.static(path.join(__dirname, "public")));
 
 // ===== MONGODB CONNECT =====
@@ -34,7 +36,7 @@ const orderSchema = new mongoose.Schema({
 const User = mongoose.model("User", userSchema);
 const Order = mongoose.model("Order", orderSchema);
 
-// ===== LOGIN API =====
+// ===== LOGIN =====
 app.post("/login", async (req, res) => {
   const { email } = req.body;
 
@@ -48,7 +50,7 @@ app.post("/login", async (req, res) => {
   res.json({ success: true, user });
 });
 
-// ===== SAVE LOCATION =====
+// ===== LOCATION =====
 app.post("/location", async (req, res) => {
   const { email, location } = req.body;
 
@@ -57,14 +59,22 @@ app.post("/location", async (req, res) => {
   res.json({ success: true });
 });
 
-// ===== ORDER API =====
+// ===== ORDER =====
 app.post("/order", async (req, res) => {
-  const { user, items, total } = req.body;
+  try {
+    console.log("ORDER API HIT"); // 🔥 DEBUG
 
-  const newOrder = new Order({ user, items, total });
-  await newOrder.save();
+    const { user, items, total } = req.body;
 
-  res.json({ message: "Order saved in DB ✅" });
+    const newOrder = new Order({ user, items, total });
+    await newOrder.save();
+
+    res.json({ message: "Order saved in DB ✅" });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Server error ❌" });
+  }
 });
 
 // ===== GET ORDERS =====
@@ -73,12 +83,12 @@ app.get("/orders/:user", async (req, res) => {
   res.json(orders);
 });
 
-// ===== DEFAULT ROUTE (VERY IMPORTANT FIX) =====
+// ===== DEFAULT =====
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// ===== PORT FIX (Render ke liye) =====
+// ===== PORT =====
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
