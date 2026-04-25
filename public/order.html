@@ -68,12 +68,20 @@ async function submitOrder(e){
   e.preventDefault();
 
   const email = document.querySelector('[name="email"]').value;
+
   const cart = JSON.parse(localStorage.getItem("cart")) || [];
   const total = localStorage.getItem("cartTotal") || 0;
 
+  if(cart.length === 0){
+    alert("Cart empty!");
+    return;
+  }
+
   const res = await fetch("/order", {
     method: "POST",
-    headers: {"Content-Type":"application/json"},
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({
       user: email,
       items: cart,
@@ -84,10 +92,10 @@ async function submitOrder(e){
   const data = await res.json();
 
   alert(data.message);
+
   localStorage.removeItem("cart");
   window.location.href = "/";
 }
 </script>
-
 </body>
 </html>
