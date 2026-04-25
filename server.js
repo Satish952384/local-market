@@ -62,17 +62,29 @@ app.post("/location", async (req, res) => {
 // ===== ORDER =====
 app.post("/order", async (req, res) => {
   try {
-    console.log("ORDER API HIT"); // 🔥 DEBUG
+    console.log("ORDER API HIT 🔥");
 
     const { user, items, total } = req.body;
 
-    const newOrder = new Order({ user, items, total });
+    // 🔥 validation (important)
+    if (!user || !items || !total) {
+      return res.status(400).json({ message: "Missing data ❌" });
+    }
+
+    const newOrder = new Order({
+      user,
+      items,
+      total
+    });
+
     await newOrder.save();
+
+    console.log("✅ Order Saved");
 
     res.json({ message: "Order saved in DB ✅" });
 
   } catch (err) {
-    console.log(err);
+    console.log("❌ ERROR:", err); // 🔥 ये असली problem दिखाएगा
     res.status(500).json({ message: "Server error ❌" });
   }
 });
