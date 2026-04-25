@@ -117,16 +117,12 @@ async function submitLogin(){
 }
 
 // GOOGLE LOGIN
-function googleLogin(){
-  let email = prompt("Enter your email");
+function googleLogin() {
+  userName = "user@gmail.com";
+  localStorage.setItem("userName", userName);
 
-  if(!email || !email.includes("@")){
-    alert("Invalid email");
-    return;
-  }
-
-  localStorage.setItem("userName", email);
-  document.getElementById("userText").innerText = email;
+  document.getElementById("userText").innerText = userName;
+  closeModal("loginModal");
 }
 
 // 🔥 LOCATION
@@ -184,6 +180,7 @@ function showSection(type){
       <p><b>Location:</b> ${userLocation || "Not Set"}</p>
     `;
   }
+
   if(type === "contact"){
     box.innerHTML = `
       <h3>📞 Contact</h3>
