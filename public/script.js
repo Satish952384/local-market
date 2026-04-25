@@ -117,12 +117,16 @@ async function submitLogin(){
 }
 
 // GOOGLE LOGIN
-function googleLogin() {
-  userName = "user@gmail.com";
-  localStorage.setItem("userName", userName);
+function googleLogin(){
+  let email = prompt("Enter your email");
 
-  document.getElementById("userText").innerText = userName;
-  closeModal("loginModal");
+  if(!email || !email.includes("@")){
+    alert("Invalid email");
+    return;
+  }
+
+  localStorage.setItem("userName", email);
+  document.getElementById("userText").innerText = email;
 }
 
 // 🔥 LOCATION
@@ -180,40 +184,6 @@ function showSection(type){
       <p><b>Location:</b> ${userLocation || "Not Set"}</p>
     `;
   }
-
-  if(type === "orders"){
-    box.innerHTML = "<h3>📦 Your Orders</h3><p>Loading...</p>";
-
-    fetch(`${BASE_URL}/orders/${userName}`)
-      .then(res => res.json())
-      .then(data => {
-
-        if(!data || data.length === 0){
-          box.innerHTML = "<h3>📦 Your Orders</h3><p>No orders yet</p>";
-          return;
-        }
-
-        let html = "<h3>📦 Your Orders</h3>";
-
-        data.forEach((order,i)=>{
-          html += `<b>Order ${i+1}</b><br>`;
-
-          order.items.forEach(it=>{
-            html += `${it.name} ₹${it.price}<br>`;
-          });
-
-          html += `<b>Total:</b> ₹${order.total}<br>`;
-          html += `<small>${new Date(order.date).toLocaleString()}</small><br>`;
-          html += "<hr>";
-        });
-
-        box.innerHTML = html;
-      })
-      .catch(() => {
-        box.innerHTML = "<p>Error loading orders ❌</p>";
-      });
-  }
-
   if(type === "contact"){
     box.innerHTML = `
       <h3>📞 Contact</h3>

@@ -1,69 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Checkout - LocalMarket</title>
+<title>Order</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header class="nav">
-  <div class="logo">LocalMarket 🛒</div>
-</header>
+<h2>Checkout</h2>
 
-<div class="checkout">
+<input id="email" placeholder="Email"><br><br>
+<button onclick="submitOrder()">Place Order</button>
 
-  <!-- LEFT -->
-  <div class="left">
-    <h2>Delivery Details</h2>
-
-    <!-- ❌ form hata diya (direct JS use karenge) -->
-    
-    <div class="field">
-      <label>Full Name</label>
-      <input type="text" id="name" required>
-    </div>
-
-    <div class="field">
-      <label>Phone Number</label>
-      <input type="text" id="phone" required>
-    </div>
-
-    <div class="field">
-      <label>Email</label>
-      <input type="email" id="email" required>
-    </div>
-
-    <div class="field">
-      <label>Delivery Address</label>
-      <textarea id="address" required></textarea>
-    </div>
-
-    <!-- 🔥 DIRECT BUTTON -->
-    <button onclick="submitOrder()" class="btn">Place Order</button>
-
-  </div>
-
-  <!-- RIGHT -->
-  <div class="right">
-    <h2>Payment</h2>
-
-    <div class="card-box">
-      <p>Scan QR to Pay</p>
-      <img src="/upi-qr.png" class="qr">
-      <p class="note">After payment, click "Place Order"</p>
-    </div>
-  </div>
-
-</div>
-
-<!-- 🔥 FINAL SCRIPT -->
 <script>
-async function submitOrder(){
+const BASE_URL = "https://local-market-wr0w.onrender.com";
 
-  alert("Button Clicked ✅"); // DEBUG
+// auto fill email
+document.getElementById("email").value =
+  localStorage.getItem("userName") || "";
+
+async function submitOrder(){
 
   const email = document.getElementById("email").value;
 
@@ -71,16 +27,14 @@ async function submitOrder(){
   const total = localStorage.getItem("cartTotal") || 0;
 
   if(cart.length === 0){
-    alert("Cart empty!");
+    alert("Cart empty ❌");
     return;
   }
 
   try {
-    const res = await fetch("https://local-market-wr0w.onrender.com/order", {
+    const res = await fetch(BASE_URL + "/order", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: {"Content-Type":"application/json"},
       body: JSON.stringify({
         user: email,
         items: cart,
@@ -88,20 +42,16 @@ async function submitOrder(){
       })
     });
 
-    alert("API HIT ✅");
-
     const data = await res.json();
 
-    alert("Order saved in DB ✅");
+    alert(data.message);
 
     localStorage.removeItem("cart");
     localStorage.removeItem("cartTotal");
 
-    window.location.href = "/";
-
-  } catch (err) {
+  } catch (err){
     console.log(err);
-    alert("Server error ❌");
+    alert("Error ❌");
   }
 }
 </script>

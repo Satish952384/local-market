@@ -1,90 +1,76 @@
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
-const cors = require("cors"); // 🔥 ADD
+const cors = require("cors");
 
 const app = express();
 
 // ===== MIDDLEWARE =====
-app.use(cors()); // 🔥 VERY IMPORTANT
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// STATIC FILES
+// STATIC
 app.use(express.static(path.join(__dirname, "public")));
 
-// ===== MONGODB CONNECT =====
+// ===== DB CONNECT =====
 mongoose.connect(
   "mongodb+srv://kumarsatish97_db_user:abc%40123@cluster0.09vltwc.mongodb.net/localmarket?retryWrites=true&w=majority"
 )
 .then(() => console.log("✅ MongoDB Connected"))
 .catch(err => console.log("❌ DB Error:", err));
 
-// ===== SCHEMA =====
-const userSchema = new mongoose.Schema({
+// ===== SCHEMAS =====
+const User = mongoose.model("User", new mongoose.Schema({
   email: String,
   location: String
-});
+}));
 
-const orderSchema = new mongoose.Schema({
+const Order = mongoose.model("Order", new mongoose.Schema({
   user: String,
   items: Array,
   total: Number,
   date: { type: Date, default: Date.now }
-});
-
-const User = mongoose.model("User", userSchema);
-const Order = mongoose.model("Order", orderSchema);
+}));
 
 // ===== LOGIN =====
 app.post("/login", async (req, res) => {
   const { email } = req.body;
 
   let user = await User.findOne({ email });
-
   if (!user) {
     user = new User({ email });
     await user.save();
   }
 
-  res.json({ success: true, user });
+  res.json({ success: true });
 });
 
 // ===== LOCATION =====
 app.post("/location", async (req, res) => {
   const { email, location } = req.body;
-
   await User.updateOne({ email }, { location });
-
   res.json({ success: true });
 });
 
 // ===== ORDER =====
 app.post("/order", async (req, res) => {
   try {
-    console.log("ORDER API HIT 🔥");
+    console.log("NEW ORDER:", req.body);
 
     const { user, items, total } = req.body;
 
-    // 🔥 validation (important)
     if (!user || !items || !total) {
       return res.status(400).json({ message: "Missing data ❌" });
     }
 
-    const newOrder = new Order({
-      user,
-      items,
-      total
-    });
-
+    const newOrder = new Order({ user, items, total });
     await newOrder.save();
-
-    console.log("✅ Order Saved");
 
     res.json({ message: "Order saved in DB ✅" });
 
   } catch (err) {
-    console.log("❌ ERROR:", err); // 🔥 ये असली problem दिखाएगा
+    console.log(err);
     res.status(500).json({ message: "Server error ❌" });
   }
 });
@@ -95,14 +81,11 @@ app.get("/orders/:user", async (req, res) => {
   res.json(orders);
 });
 
-// ===== DEFAULT =====
+// ===== HOME =====
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// ===== PORT =====
+// ===== START =====
 const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log("🚀 Server running"));
